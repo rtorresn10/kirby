@@ -3,7 +3,6 @@
 namespace Kirby\Toolkit;
 
 use Closure;
-use Exception;
 
 /**
  * Localization class, roughly inspired by VueI18n
@@ -207,22 +206,13 @@ class I18n
         }
 
         if (is_string($translation) === true) {
-            return $translation;
-        }
-
-        if (count($translation) !== 3) {
-            throw new Exception('Please provide 3 translations');
-        }
-
-        switch ($count) {
-            case 0:
-                $message = $translation[0];
-                break;
-            case 1:
-                $message = $translation[1];
-                break;
-            default:
-                $message = $translation[2];
+            $message = $translation;
+        } else {
+            if (isset($translation[$count]) === true) {
+                $message = $translation[$count];
+            } else {
+                $message = end($translation);
+            }
         }
 
         return str_replace('{{ count }}', $count, $message);
