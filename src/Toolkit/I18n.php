@@ -205,6 +205,10 @@ class I18n
             return null;
         }
 
+        if (is_a($translation, 'Closure') === true) {
+            return $translation($count);
+        }
+
         if (is_string($translation) === true) {
             $message = $translation;
         } else {
