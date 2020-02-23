@@ -190,12 +190,17 @@ class I18n
     }
 
     /**
-     * Translate amounts
+     * Translates amounts
      *
-     * Counting Steps
-     * Return callback value if translation key is callback
-     * Return callback value if translation has countMapping callback key
-     * Return replaced `{{ count }}` string if translation is string or array for simple mapping
+     * Translation definition options:
+     * - Translation is a simple string: `{{ count }}` gets replaced in the template
+     * - Translation is an array with a value for each count: Chooses the correct template and
+     *   replaces `{{ count }}` in the template; if no specific template for the input count is
+     *   defined, the template that is defined last in the translation array is used
+     * - Translation is a callback with a `$count` argument: Returns the callback return value
+     *
+     * If a special global translation key `countMapping` is defined with a callback, this
+     * callback will determine the template array key to use for a specific count.
      *
      * @param string $key
      * @param int|float $count
@@ -214,18 +219,19 @@ class I18n
             return $translation($count);
         }
 
-        // Apply global count mapping if translation has `countMapping` key
+        // apply global count mapping if the translation has a `countMapping` key
         $countMapping = static::translate('countMapping', null, $locale);
-
         if (is_a($countMapping, 'Closure') === true) {
-            return $countMapping($translation, $count);
+            $countKey = $countMapping($count);
+        } else {
+            $countKey = $count;
         }
 
         if (is_string($translation) === true) {
             $message = $translation;
         } else {
-            if (isset($translation[$count]) === true) {
-                $message = $translation[$count];
+            if (isset($translation[$countKey]) === true) {
+                $message = $translation[$countKey];
             } else {
                 $message = end($translation);
             }

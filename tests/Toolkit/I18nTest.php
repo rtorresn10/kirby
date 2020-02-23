@@ -189,12 +189,12 @@ class I18nTest extends TestCase
     {
         I18n::$translations = [
             'en' => [
-                'car' => 'One car'
+                'car' => '{{ count }} car(s)'
             ]
         ];
 
-        $this->assertEquals('One car', I18n::translateCount('car', 1));
-        $this->assertEquals('One car', I18n::translateCount('car', 2));
+        $this->assertEquals('1 car(s)', I18n::translateCount('car', 1));
+        $this->assertEquals('2 car(s)', I18n::translateCount('car', 2));
     }
 
     public function testTranslateCountWithKeyCallback()
@@ -234,29 +234,21 @@ class I18nTest extends TestCase
                     'many' => 'Many cars',
                     'other' => '{{ count }} cars'
                 ],
-                'countMapping' => function ($translation, $count) {
+                'countMapping' => function ($count) {
                     switch ($count) {
                         case 0:
-                            $message = $translation['zero'];
-                            break;
+                            return 'zero';
                         case 1:
-                            $message = $translation['one'];
-                            break;
+                            return 'one';
                         case 2:
-                            $message = $translation['two'];
-                            break;
+                            return 'two';
                         case in_array($count, [3, 4, 5]) === true:
-                            $message = $translation['few'];
-                            break;
+                            return 'few';
                         case is_float($count):
-                            $message = $translation['other'];
-                            break;
+                            return 'other';
                         default:
-                            $message = $translation['many'];
-                            break;
+                            return 'many';
                     }
-
-                    return str_replace('{{ count }}', $count, $message);
                 }
             ]
         ];
