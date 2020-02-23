@@ -192,12 +192,17 @@ class I18n
     /**
      * Translate amounts
      *
+     * Counting Steps
+     * Return callback value if translation key is callback
+     * Return callback value if translation has countMapping callback key
+     * Return replaced `{{ count }}` string if translation is string or array for simple mapping
+     *
      * @param string $key
-     * @param int $count
+     * @param int|float $count
      * @param string $locale
      * @return mixed
      */
-    public static function translateCount(string $key, int $count, string $locale = null)
+    public static function translateCount(string $key, $count, string $locale = null)
     {
         $translation = static::translate($key, null, $locale);
 
@@ -207,6 +212,13 @@ class I18n
 
         if (is_a($translation, 'Closure') === true) {
             return $translation($count);
+        }
+
+        // Apply global count mapping if translation has `countMapping` key
+        $countMapping = static::translate('countMapping', null, $locale);
+
+        if (is_a($countMapping, 'Closure') === true) {
+            return $countMapping($translation, $count);
         }
 
         if (is_string($translation) === true) {

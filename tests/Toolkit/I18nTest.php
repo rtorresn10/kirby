@@ -197,7 +197,7 @@ class I18nTest extends TestCase
         $this->assertEquals('One car', I18n::translateCount('car', 2));
     }
 
-    public function testTranslateCountWithCallback()
+    public function testTranslateCountWithKeyCallback()
     {
         I18n::$translations = [
             'en' => [
@@ -220,6 +220,53 @@ class I18nTest extends TestCase
         $this->assertEquals('One car', I18n::translateCount('car', 1));
         $this->assertEquals('Few cars', I18n::translateCount('car', 2));
         $this->assertEquals('Many cars', I18n::translateCount('car', 5));
+    }
+
+    public function testTranslateCountWithGlobalCallback()
+    {
+        I18n::$translations = [
+            'en' => [
+                'car' => [
+                    'zero' => 'No car',
+                    'one' => 'One car',
+                    'two' => 'Two cars',
+                    'few' => 'Few cars',
+                    'many' => 'Many cars',
+                    'other' => '{{ count }} cars'
+                ],
+                'countMapping' => function ($translation, $count) {
+                    switch ($count) {
+                        case 0:
+                            $message = $translation['zero'];
+                            break;
+                        case 1:
+                            $message = $translation['one'];
+                            break;
+                        case 2:
+                            $message = $translation['two'];
+                            break;
+                        case in_array($count, [3, 4, 5]) === true:
+                            $message = $translation['few'];
+                            break;
+                        case is_float($count):
+                            $message = $translation['other'];
+                            break;
+                        default:
+                            $message = $translation['many'];
+                            break;
+                    }
+
+                    return str_replace('{{ count }}', $count, $message);
+                }
+            ]
+        ];
+
+        $this->assertEquals('No car', I18n::translateCount('car', 0));
+        $this->assertEquals('One car', I18n::translateCount('car', 1));
+        $this->assertEquals('Two cars', I18n::translateCount('car', 2));
+        $this->assertEquals('Few cars', I18n::translateCount('car', 5));
+        $this->assertEquals('Many cars', I18n::translateCount('car', 9));
+        $this->assertEquals('10.5 cars', I18n::translateCount('car', 10.5));
     }
 
     public function testLoadTranslation()

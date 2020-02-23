@@ -749,10 +749,10 @@ function t($key, string $fallback = null)
  * Translates a count
  *
  * @param string|array $key
- * @param int $count
+ * @param int|float $count
  * @return mixed
  */
-function tc($key, int $count)
+function tc($key, $count)
 {
     return I18n::translateCount($key, $count);
 }
