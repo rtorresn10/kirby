@@ -28,7 +28,7 @@ export default {
 
 @media screen and (min-width: $breakpoint-small) {
   .k-cards[data-size="tiny"] {
-    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   }
   .k-cards[data-size="small"] {
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
